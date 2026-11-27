@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hub xmlns="http://docbook.org/ns/docbook" xml:lang="en">
+   <info>
+      <keywordset role="hub">
+         <keyword role="source-basename">lists-test</keyword>
+      </keywordset>
+   </info>
+   <para xmlns:css="http://www.w3.org/1996/css"
+         text-indent="-0"
+         margin-left="0"
+         xml:id="plain">Plain text</para>
+   <para xmlns:css="http://www.w3.org/1996/css"
+         text-indent="-0"
+         margin-left="0"
+         xml:id="leading">
+      <tab>	</tab>Lead<tab>	</tab>
+   </para>
+   <para xmlns:css="http://www.w3.org/1996/css"
+         text-indent="-400"
+         margin-left="400"
+         xml:id="ordered">
+      <phrase role="hub:identifier">1.</phrase>
+      <tab>	</tab>One</para>
+   <para xmlns:css="http://www.w3.org/1996/css"
+         text-indent="-400"
+         margin-left="400"
+         xml:id="bullet">
+      <phrase role="hub:identifier">•</phrase>
+      <tab>	</tab>Bullet</para>
+   <para xmlns:css="http://www.w3.org/1996/css"
+         text-indent="-0"
+         margin-left="0"
+         xml:id="internal">Alpha<tab>	</tab>Beta</para>
+   <para xmlns:css="http://www.w3.org/1996/css"
+         text-indent="-400"
+         margin-left="400"
+         xml:id="existing">
+      <phrase role="hub:identifier">2.</phrase>
+      <tab>	</tab>Two</para>
+   <para xml:id="equation" role="Equation">
+      <tab>	</tab>E=mc²</para>
+   <figure xmlns:css="http://www.w3.org/1996/css"
+           margin-left="240"
+           xml:id="figure">
+      <title css:margin-left="12pt">Caption</title>
+      <para text-indent="-0" margin-left="0">Figure</para>
+   </figure>
+   <para xmlns:css="http://www.w3.org/1996/css"
+         xml:id="pseudo"
+         css:display="list-item"
+         css:pseudo-marker_content="'•'">
+      <phrase role="hub:identifier">•</phrase>
+      <tab/>Pseudo marker</para>
+</hub>

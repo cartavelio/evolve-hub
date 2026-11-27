@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 import javax.xml.parsers.DocumentBuilderFactory
 
-/** Runs real Saxon CLI callers; expectations describe the public tab/list contract. */
+/** Runs real Saxon CLI callers; expectations describe the public tab/list/table contracts. */
 class CompositionTest {
     private val root = Path.of("").toAbsolutePath()
     private val build = Path.of(System.getProperty("composition.outputDirectory", root.resolve("target").toString()))
@@ -71,6 +71,8 @@ class CompositionTest {
         stylesheet: Path,
         compileOnly: Boolean = false,
         input: String = "tabs.xml",
+        initialMode: String? = "{http://transpect.io/hub}tabs-to-indent",
+        inputPath: Path = fixtures.resolve(input),
     ): Pair<Int, Path> {
         val catalog = results.resolve("$name-catalog.xml")
         Files.writeString(
@@ -99,11 +101,11 @@ class CompositionTest {
         } else {
             command +=
                 listOf(
-                    "-s:${fixtures.resolve(input)}",
+                    "-s:$inputPath",
                     "-o:$output",
-                    "-im:{http://transpect.io/hub}tabs-to-indent",
                 )
         }
+        if (!compileOnly && initialMode != null) command += "-im:$initialMode"
         Files.writeString(results.resolve("$name-command.txt"), command.joinToString("\n"))
         val process =
             ProcessBuilder(command)
@@ -210,5 +212,118 @@ class CompositionTest {
             val log = Files.readString(results.resolve("raw-$kind.log"))
             assertTrue(log.contains("XPST0008") || log.contains("XPST0017"), log)
         }
+    }
+
+    private fun tableResult(
+        name: String,
+        fixture: String,
+    ): org.w3c.dom.Document {
+        val (exit, output) = run(name, fixtures.resolve("caller-table.xsl"), input = fixture, initialMode = null)
+        assertEquals(0, exit, Files.readString(results.resolve("$name.log")))
+        return DocumentBuilderFactory
+            .newInstance()
+            .also { it.isNamespaceAware = true }
+            .newDocumentBuilder()
+            .parse(output.toFile())
+    }
+
+    @Test
+    fun tableSpanWithoutRemoval() {
+        val document = tableResult("table-span", "table-span-without-removal.xml")
+        val span = document.getElementsByTagNameNS("http://docbook.org/ns/docbook", "spanspec")
+        assertEquals(1, span.length)
+        val element = span.item(0) as Element
+        assertEquals("wide", element.getAttribute("spanname"))
+        assertEquals("c1", element.getAttribute("namest"))
+        assertEquals("c2", element.getAttribute("nameend"))
+        val entries = document.getElementsByTagNameNS("http://docbook.org/ns/docbook", "entry")
+        assertEquals(3, entries.length)
+        assertEquals("Span ι", entries.item(0).textContent)
+        assertEquals("c1", (entries.item(0) as Element).getAttribute("namest"))
+        assertEquals("c2", (entries.item(0) as Element).getAttribute("nameend"))
+    }
+
+    @Test
+    fun tinyPointColumn() {
+        val document = tableResult("tiny-point", "tiny-pt-column.xml")
+        val group = document.getElementsByTagNameNS("http://docbook.org/ns/docbook", "tgroup").item(0) as Element
+        assertEquals("2", group.getAttribute("cols"))
+        val columns = document.getElementsByTagNameNS("http://docbook.org/ns/docbook", "colspec")
+        assertEquals(2, columns.length)
+        assertEquals("10.5pt", (columns.item(0) as Element).getAttribute("colwidth"))
+        assertEquals("c2", (columns.item(1) as Element).getAttribute("colname"))
+        val entries = document.getElementsByTagNameNS("http://docbook.org/ns/docbook", "entry")
+        assertEquals(2, entries.length)
+        assertEquals("Left κ", entries.item(0).textContent)
+        assertEquals("Right λ", entries.item(1).textContent)
+        assertEquals("c1", (entries.item(0) as Element).getAttribute("colname"))
+        assertEquals("c2", (entries.item(1) as Element).getAttribute("colname"))
+    }
+
+    private fun tableModes(namespaces: List<String>) {
+        for ((namespaceIndex, namespace) in namespaces.withIndex()) {
+            for (small in listOf(false, true)) {
+                for (edge in listOf("colname", "namest", "nameend")) {
+                    val mode = "rm-redundant-${if (small) "small-" else ""}cols-$edge"
+                    val name = "table-modes-$namespaceIndex-$mode-${if (namespace.isEmpty()) "empty" else "qualified"}"
+                    val start = if (edge == "namest") "c2" else "c1"
+                    val end = if (edge == "nameend") "c2" else "c3"
+                    val input = results.resolve("$name-input.xml")
+                    Files.writeString(
+                        input,
+                        """
+                        <hub xmlns="$namespace"><informaltable><tgroup cols="3">
+                          <colspec colnum="1" colname="c1" colwidth="10pt"/>
+                          <colspec colnum="2" colname="c2" colwidth="0.5pt"/>
+                          <colspec colnum="3" colname="c3"/>
+                          <spanspec spanname="wide" namest="$start" nameend="$end"/>
+                          <tbody><row><entry colname="c1">Left</entry><entry colname="c3">Right</entry></row>
+                          <row><entry namest="$start" nameend="$end">Span</entry></row></tbody>
+                        </tgroup></informaltable></hub>
+                        """.trimIndent(),
+                    )
+                    val caller = results.resolve("$name-caller.xsl")
+                    Files.writeString(
+                        caller,
+                        Files.readString(fixtures.resolve("caller-table.xsl")).replace("rm-redundant-small-cols-colname", mode),
+                    )
+                    val (exit, output) = run(name, caller, initialMode = null, inputPath = input)
+                    assertEquals(0, exit, Files.readString(results.resolve("$name.log")))
+                    val document =
+                        DocumentBuilderFactory.newInstance().also { it.isNamespaceAware = true }.newDocumentBuilder().parse(
+                            output.toFile(),
+                        )
+                    val group = document.getElementsByTagNameNS(namespace.ifEmpty { null }, "tgroup").item(0) as Element
+                    assertEquals("2", group.getAttribute("cols"), name)
+                    val columns = group.getElementsByTagNameNS(namespace.ifEmpty { null }, "colspec")
+                    assertEquals(2, columns.length, name)
+                    assertEquals(if (edge == "namest") "10pt" else "10.5pt", (columns.item(0) as Element).getAttribute("colwidth"), name)
+                    // A missing authored width stays absent; it must not become NaN or an empty attribute.
+                    assertFalse((columns.item(1) as Element).hasAttribute("colwidth"), name)
+                    val entries = group.getElementsByTagNameNS(namespace.ifEmpty { null }, "entry")
+                    assertEquals(listOf("Left", "Right", "Span"), (0 until entries.length).map { entries.item(it).textContent }, name)
+                    assertEquals("c1", (entries.item(0) as Element).getAttribute("colname"), name)
+                    assertEquals("c2", (entries.item(1) as Element).getAttribute("colname"), name)
+                    val spans = group.getElementsByTagNameNS(namespace.ifEmpty { null }, "spanspec")
+                    assertEquals(if (edge == "colname") 1 else 0, spans.length, name)
+                    if (edge == "colname") {
+                        assertEquals("c1", (spans.item(0) as Element).getAttribute("namest"), name)
+                        assertEquals("c2", (spans.item(0) as Element).getAttribute("nameend"), name)
+                    } else {
+                        assertEquals(if (edge == "namest") "c2" else "c1", (entries.item(2) as Element).getAttribute("colname"), name)
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun noNamespaceTableModes() {
+        tableModes(listOf(""))
+    }
+
+    @Test
+    fun namespacedTableModes() {
+        tableModes(listOf("http://docbook.org/ns/docbook", "urn:test:table"))
     }
 }

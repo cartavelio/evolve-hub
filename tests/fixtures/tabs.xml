@@ -1,0 +1,12 @@
+<hub xmlns="http://docbook.org/ns/docbook" xmlns:css="http://www.w3.org/1996/css">
+  <info><css:rules><css:rule name="Indented" layout-type="para" css:margin-left="18pt" css:text-indent="-9pt"/></css:rules></info>
+  <para xml:id="numbered">1.<tab/>First item</para>
+  <para xml:id="nested">1.1.<tab/>Nested item</para>
+  <para xml:id="styled" role="Indented">2.<tab/>Styled item</para>
+  <para xml:id="leading"><tab/>Leading tab</para>
+  <para xml:id="trailing">Trailing tab<tab/></para>
+  <para xml:id="internal">Internal<tab/>tab</para>
+  <para xml:id="equation" role="Equation"><tab/>E=mc²</para>
+  <para xml:id="scope">Text<footnote><para>1.<tab/>Note item</para></footnote></para>
+  <figure xml:id="float"><title css:margin-left="12pt">A caption</title><para>Figure content</para></figure>
+</hub>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><hub xmlns="http://docbook.org/ns/docbook">
+  <info><css:rules xmlns:css="http://www.w3.org/1996/css"><css:rule name="Indented" layout-type="para" css:margin-left="18pt" css:text-indent="-9pt"/></css:rules></info>
+  <para xmlns:css="http://www.w3.org/1996/css" text-indent="-400" margin-left="400" xml:id="numbered"><phrase role="hub:identifier">1.</phrase><tab/>First item</para>
+  <para xmlns:css="http://www.w3.org/1996/css" text-indent="-400" margin-left="400" xml:id="nested"><phrase role="hub:identifier">1.1.</phrase><tab/>Nested item</para>
+  <para xmlns:css="http://www.w3.org/1996/css" text-indent="-180" margin-left="360" xml:id="styled" role="Indented"><phrase role="hub:identifier">2.</phrase><tab/>Styled item</para>
+  <para xmlns:css="http://www.w3.org/1996/css" text-indent="-0" margin-left="0" xml:id="leading"><tab/>Leading tab</para>
+  <para xmlns:css="http://www.w3.org/1996/css" text-indent="-0" margin-left="0" xml:id="trailing">Trailing tab<tab/></para>
+  <para xmlns:css="http://www.w3.org/1996/css" text-indent="-0" margin-left="0" xml:id="internal">Internaltab</para>
+  <para xml:id="equation" role="Equation"><tab/>E=mc²</para>
+  <para xmlns:css="http://www.w3.org/1996/css" text-indent="-0" margin-left="0" xml:id="scope">Text<footnote><para text-indent="-400" margin-left="400"><phrase role="hub:identifier">1.</phrase><tab/>Note item</para></footnote></para>
+  <figure xmlns:css="http://www.w3.org/1996/css" margin-left="240" xml:id="float"><title css:margin-left="12pt">A caption</title><para text-indent="-0" margin-left="0">Figure content</para></figure>
+</hub>

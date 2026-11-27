@@ -1,0 +1,1 @@
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:docx2hub="http://transpect.io/docx2hub" xmlns:hub="http://transpect.io/hub"><xsl:import href="http://transpect.io/evolve-hub/xsl/evolve-hub.xsl"/><xsl:template match="/"><result><xsl:apply-templates select="/*" mode="hub:rm-redundant-small-cols-colname"/></result></xsl:template></xsl:stylesheet>

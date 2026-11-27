@@ -143,14 +143,16 @@
     </xsl:copy>
   </xsl:template>
   
+  <!-- Column lookups use *:colspec. Keep their optional element types namespace-neutral
+       too, so both namespaced and unqualified CALS tables are accepted in XSLT 2.0. -->
   <xsl:template match="*:entry" mode="hub:rm-redundant-cols-colname hub:rm-redundant-cols-namest">
     <xsl:param name="redundant-cols" tunnel="yes" as="xs:string*" select="()"/>
     <xsl:copy>
       <xsl:apply-templates select="@* except (@spanname, @namest, @nameend)[not(empty($redundant-cols))]" mode="#current"/>
       <xsl:if test="not(empty($redundant-cols))">
-        <xsl:variable name="colname-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@colname]" as="element(colspec)?"/>
-        <xsl:variable name="namest-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@namest]" as="element(colspec)?"/>
-        <xsl:variable name="nameend-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@nameend]" as="element(colspec)?"/>
+        <xsl:variable name="colname-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@colname]" as="element()?"/>
+        <xsl:variable name="namest-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@namest]" as="element()?"/>
+        <xsl:variable name="nameend-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@nameend]" as="element()?"/>
         <xsl:choose>
           <xsl:when test="@colname or 
                           ((number($nameend-corresponding-colspec/@colnum)-
@@ -188,9 +190,9 @@
     <xsl:copy>
       <xsl:apply-templates select="@* except (@spanname, @namest, @nameend)[not(empty($redundant-cols))]" mode="#current"/>
       <xsl:if test="not(empty($redundant-cols))">
-        <xsl:variable name="colname-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@colname]" as="element(colspec)?"/>
-        <xsl:variable name="namest-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@namest]" as="element(colspec)?"/>
-        <xsl:variable name="nameend-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@nameend]" as="element(colspec)?"/>
+        <xsl:variable name="colname-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@colname]" as="element()?"/>
+        <xsl:variable name="namest-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@namest]" as="element()?"/>
+        <xsl:variable name="nameend-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@nameend]" as="element()?"/>
         <xsl:choose>
           <xsl:when test="@colname or 
                           ((number($nameend-corresponding-colspec/@colnum)-
@@ -235,9 +237,9 @@
     <xsl:copy>
       <xsl:apply-templates select="@* except (@spanname, @namest, @nameend)[not(empty($redundant-cols))]" mode="#current"/>
       <xsl:if test="not(empty($redundant-cols))">
-        <xsl:variable name="colname-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@colname]" as="element(colspec)?"/>
-        <xsl:variable name="namest-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@namest]" as="element(colspec)?"/>
-        <xsl:variable name="nameend-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@nameend]" as="element(colspec)?"/>
+        <xsl:variable name="colname-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@colname]" as="element()?"/>
+        <xsl:variable name="namest-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@namest]" as="element()?"/>
+        <xsl:variable name="nameend-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@nameend]" as="element()?"/>
         <xsl:choose>
           <xsl:when test="@colname or 
                           ((number($nameend-corresponding-colspec/@colnum)-
@@ -275,8 +277,8 @@
   
   <xsl:template match="*:spanspec" mode="hub:rm-redundant-cols-colname hub:rm-redundant-cols-namest">
     <xsl:param name="redundant-cols" tunnel="yes" as="xs:string*" select="()"/>
-    <xsl:variable name="namest-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@namest]" as="element(colspec)?"/>
-    <xsl:variable name="nameend-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@nameend]" as="element(colspec)?"/>
+    <xsl:variable name="namest-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@namest]" as="element()?"/>
+    <xsl:variable name="nameend-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@nameend]" as="element()?"/>
     <xsl:variable name="collapsed" as="xs:boolean"
                   select="not(empty($redundant-cols)) and
                           (number($nameend-corresponding-colspec/@colnum)-
@@ -302,9 +304,9 @@
   <xsl:template match="*:spanspec" mode="hub:rm-redundant-small-cols-colname hub:rm-redundant-small-cols-namest">
     <xsl:param name="redundant-cols" tunnel="yes" as="xs:string*" select="()"/>
     <xsl:variable name="namest-corresponding-colspec" 
-                  select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@namest]" as="element(colspec)?"/>
+                  select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@namest]" as="element()?"/>
     <xsl:variable name="nameend-corresponding-colspec" 
-                  select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@nameend]" as="element(colspec)?"/>
+                  select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@nameend]" as="element()?"/>
     <xsl:variable name="collapsed" as="xs:boolean"
                   select="not(empty($redundant-cols)) and
                           (number($nameend-corresponding-colspec/@colnum)-
@@ -333,8 +335,8 @@
   
   <xsl:template match="*:spanspec" mode="hub:rm-redundant-cols-nameend hub:rm-redundant-small-cols-nameend">
     <xsl:param name="redundant-cols" tunnel="yes" as="xs:string*" select="()"/>
-    <xsl:variable name="namest-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@namest]" as="element(colspec)?"/>
-    <xsl:variable name="nameend-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@nameend]" as="element(colspec)?"/>
+    <xsl:variable name="namest-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@namest]" as="element()?"/>
+    <xsl:variable name="nameend-corresponding-colspec" select="ancestor::*:tgroup[1]/*:colspec[@colname = current()/@nameend]" as="element()?"/>
     <xsl:variable name="collapsed" as="xs:boolean"
                   select="not(empty($redundant-cols)) and
                           (number($nameend-corresponding-colspec/@colnum)-

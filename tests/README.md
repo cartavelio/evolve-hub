@@ -32,3 +32,35 @@ composition with the shared root; their raw diagnostics are retained.
 For build prerequisites and commands, see the [project README](../README.md).
 No warning baseline or suppression is added for the Kotlin harness. These
 focused regressions do not claim complete XProc or corpus validation.
+
+
+`table-span-without-removal.xml` and `tiny-pt-column.xml` retain two synthetic
+DocBook inputs that previously raised Saxon `XTTE0570`: selected DocBook
+`colspec` elements were rejected by an empty-namespace sequence type. The
+retained caller's import is adapted to this library's public combined entry;
+its reached mode and inputs are unchanged. This is a source namespace/type
+regression, separate from any Saxon slot-allocation defect.
+
+The table oracles assert the authored named span and its cell content survive
+when no column is removed, and that an unused 0.5pt column is removed with
+column names remapped, both authored cells preserved and its width added to the
+preceding 10pt column. They reject both an identity-only transform and the
+older behavior that dropped spanspecs without removal.
+
+The table-mode matrix executes all six colname/namest/nameend modes, both
+ordinary and small-column variants, in DocBook, empty and another qualified
+namespace. These controls follow the existing wildcard table selectors. A
+three-column worked example must become two columns, retain all three authored
+cell texts, remap the right cell to c2, preserve a two-column span, or collapse
+a single-column span as appropriate. Width is absorbed toward the preceding
+column for colname/nameend and toward the following column for namest; an
+absent authored width stays absent. The empty-namespace matrix also passes
+before the type correction, disconfirming a general table arithmetic or
+processor failure. These cases preserve the current algorithm; they do not
+claim validation of arbitrary mixed-namespace or malformed CALS tables.
+
+Run the focused table regressions with:
+
+```sh
+./mvnw '-Dtest=CompositionTest#tableSpanWithoutRemoval+tinyPointColumn+noNamespaceTableModes+namespacedTableModes' test
+```

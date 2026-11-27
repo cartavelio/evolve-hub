@@ -28,19 +28,11 @@ For focused execution and Kotlin formatting:
 ./mvnw ktlint:format
 ```
 
-`CompositionTest` pairs `xsl/evolve-hub.xsl` and both standalone entries with
-real importing callers. It checks reached `xsl:next-match`, tab/list behavior,
-exact serialized bytes, and the expected missing-context errors from raw
-modules. Commands, diagnostics and XML outputs are retained under
+Commands, diagnostics and XML outputs are retained under
 `target/composition-results/`; CI uploads these alongside JUnit reports.
 `-Dcomposition.source=/absolute/source/tree` executes the same callers against
 another unmodified source snapshot. `-Dcomposition.buildDirectory=/absolute/output`
 keeps all build and proof files outside the source tree.
 
-The synthetic frozen fixture records the established tabs-to-indent output.
-Its expected bytes are intentionally retained, including tabs and serializer
-whitespace; the broader synthetic fixture adds independently worked indentation,
-equation, nested-numbering, footnote-scope and float-margin assertions. The tests
-cover list composition, not a complete XProc evolution or document corpus.
-Existing Saxon duplicate-import warnings are kept in the diagnostics. No warning
-baseline or suppression is added for the Kotlin harness.
+See the [composition regression oracles](tests/README.md) for fixture contracts,
+compatibility expectations, diagnostic requirements and coverage limits.

@@ -4,7 +4,7 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
   xmlns:word200x="http://schemas.microsoft.com/office/word/2003/wordml"
-  xmlns:v="urn:schemas-microsoft-com:vml" 
+  xmlns:v="urn:schemas-microsoft-com:vml"
   xmlns:dbk="http://docbook.org/ns/docbook"
   xmlns:wx="http://schemas.microsoft.com/office/word/2003/auxHint"
   xmlns:o="urn:schemas-microsoft-com:office:office"

@@ -29,9 +29,6 @@ This assertion inspects a real compiler diagnostic, not stylesheet source text.
 Standalone callers may still report duplicate imports from their deliberate
 composition with the shared root; their raw diagnostics are retained.
 
-The XSLT remains version 2.0. The test-only Maven build uses Kotlin/JVM and
-JUnit 5, and the real Saxon HE 12.10 command-line interface. There was no
-existing repository build wrapper, Java test suite, or GitHub Actions workflow
-to extend. No production stylesheet, dependency source, or JAR is patched by
-the build. These focused regressions do not claim complete XProc or corpus
-validation.
+For build prerequisites and commands, see the [project README](../README.md).
+No warning baseline or suppression is added for the Kotlin harness. These
+focused regressions do not claim complete XProc or corpus validation.
